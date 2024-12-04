@@ -2,9 +2,11 @@ import { sql, db } from '@vercel/postgres';
 import {
   CustomerField,
   CustomersTableType,
+  Invoice,
   InvoiceForm,
   InvoicesTable,
   LatestInvoiceRaw,
+  NewInvoice,
   Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
@@ -146,7 +148,7 @@ export async function fetchInvoicesPages(query: string) {
 
 export async function fetchInvoiceById(id: string) {
   try {
-    const data = await sql<InvoiceForm>`
+    const data = await client.sql<InvoiceForm>`
       SELECT
         invoices.id,
         invoices.customer_id,
@@ -171,7 +173,7 @@ export async function fetchInvoiceById(id: string) {
 
 export async function fetchCustomers() {
   try {
-    const data = await sql<CustomerField>`
+    const data = await client.sql<CustomerField>`
       SELECT
         id,
         name
@@ -219,3 +221,16 @@ export async function fetchFilteredCustomers(query: string) {
     throw new Error('Failed to fetch customer table.');
   }
 }
+
+export async function saveNewInvoice(invoice: NewInvoice) {
+  try{
+    await client.sql`
+      INSERT INTO invoices (customer_id, amount, status, date)
+      VALUES (${invoice.customerId}, ${invoice.amount}, ${invoice.status}, ${invoice.date})
+    `
+  }catch (err){
+    console.error('Database Error:', err);
+    throw new Error('Failed to save new invoice.');
+  }
+}
+
