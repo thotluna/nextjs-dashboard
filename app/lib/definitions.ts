@@ -33,6 +33,13 @@ export type NewInvoice = {
   date: string;
 }
 
+export type EditedInvoice = {
+  customerId: string;
+  amount: number;
+  status: string;
+  id: string;
+}
+
 export type Revenue = {
   month: string;
   revenue: number;

@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { db } from '@vercel/postgres'
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { saveNewInvoice } from './data';
+import { saveNewInvoice, updateInvoice as updateDbInvoice } from './data';
 
 const client = await db.connect();
 
@@ -39,3 +39,24 @@ export async function createInvoice(formData: FormData) {
   revalidatePath(PATH)
   redirect(PATH)
 }
+
+const UpdateInvoice = FormSchema.omit({ id: true, date: true });
+
+export async function updateInvoice(id: string, formData: FormData) {
+  const { customerId, amount, status } = UpdateInvoice.parse( {
+    customerId: formData.get('customerId'),
+    amount: formData.get('amount'),
+    status: formData.get('status'),
+  })
+   const amountInCents = amount * 100
+
+  updateDbInvoice({
+    customerId: customerId,
+    amount: amountInCents,
+    status: status,
+    id: id
+  })
+
+  revalidatePath(PATH)
+  redirect(PATH)
+} 

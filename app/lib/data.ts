@@ -2,7 +2,7 @@ import { sql, db } from '@vercel/postgres';
 import {
   CustomerField,
   CustomersTableType,
-  Invoice,
+  EditedInvoice,
   InvoiceForm,
   InvoicesTable,
   LatestInvoiceRaw,
@@ -227,6 +227,20 @@ export async function saveNewInvoice(invoice: NewInvoice) {
     await client.sql`
       INSERT INTO invoices (customer_id, amount, status, date)
       VALUES (${invoice.customerId}, ${invoice.amount}, ${invoice.status}, ${invoice.date})
+    `
+  }catch (err){
+    console.error('Database Error:', err);
+    throw new Error('Failed to save new invoice.');
+  }
+}
+
+
+export async function updateInvoice({ customerId, amount, status, id }: EditedInvoice) {
+  try{
+    await client.sql`
+      UPDATE invoices
+      SET customer_id = ${customerId}, amount = ${amount}, status = ${status}
+      WHERE id = ${id}
     `
   }catch (err){
     console.error('Database Error:', err);
