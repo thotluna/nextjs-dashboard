@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { db } from '@vercel/postgres'
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { saveNewInvoice, updateInvoice as updateDbInvoice } from './data';
+import { delInvoice, saveNewInvoice, updateInvoice as updateDbInvoice } from './data';
 
 const client = await db.connect();
 
@@ -62,6 +62,6 @@ export async function updateInvoice(id: string, formData: FormData) {
 } 
 
 export async function deleteInvoice(id: string) {
-  await client.sql`DELETE FROM invoices WHERE id = ${id}`;
+  delInvoice({ id: id })  
   revalidatePath('/dashboard/invoices');
 }

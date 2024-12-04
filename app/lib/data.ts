@@ -228,7 +228,7 @@ export async function saveNewInvoice(invoice: NewInvoice) {
     `
   }catch (err){
     console.error('Database Error:', err);
-    throw new Error('Failed to save new invoice.');
+    throw new Error('Failed to save invoice.');
   }
 }
 
@@ -242,7 +242,16 @@ export async function updateInvoice({ customerId, amount, status, id }: EditedIn
     `
   }catch (err){
     console.error('Database Error:', err);
-    throw new Error('Failed to save new invoice.');
+    throw new Error('Failed to Update invoice.');
   }
 }
+
+export async function delInvoice({ id }: { id: string }) {
+  try{
+    await client.sql`DELETE FROM invoices WHERE id = ${id}`;
+  }catch (err){
+    console.error('Database Error:', err);
+    throw new Error('Failed to delete invoice.');
+  }
+} 
 
